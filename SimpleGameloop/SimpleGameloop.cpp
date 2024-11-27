@@ -1,8 +1,8 @@
 #include "raylib.h"
 #include <math.h>
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 1000;
+const int SCREEN_HEIGHT = 800;
 const Color BACKGROUND_COLOR = Color{ 255, 239, 213, 255 };
 const Color PAUSED_TEXT_COLOR = Color{ 255, 165, 0, 255 };
 const Color INSTRUCTION_TEXT_COLOR = Color{ 255, 69, 0, 255 };
