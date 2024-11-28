@@ -46,10 +46,10 @@ public:
         float halfWidth = texture.width / 2.0f;
         float halfHeight = texture.height / 2.0f;
 
-        if (position.x - halfWidth < 0) { position.x = halfWidth; velocity.x = 0; }
-        if (position.x + halfWidth > screenWidth) { position.x = screenWidth - halfWidth; velocity.x = 0; }
-        if (position.y - halfHeight < 0) { position.y = halfHeight; velocity.y = 0; }
-        if (position.y + halfHeight > screenHeight) { position.y = screenHeight - halfHeight; velocity.y = 0; }
+        if (position.x - halfWidth < 0) { position.x = halfWidth; velocity.x = -velocity.x; }
+        if (position.x + halfWidth > screenWidth) { position.x = screenWidth - halfWidth; velocity.x = -velocity.x; }
+        if (position.y - halfHeight < 0) { position.y = halfHeight; velocity.y = -velocity.y; }
+        if (position.y + halfHeight > screenHeight) { position.y = screenHeight - halfHeight; velocity.y = -velocity.y; }
     }
 
     void Draw() const {
