@@ -132,6 +132,12 @@
   <ItemGroup>
     <Image Include="resources\p1.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Saveable.h" />
+    <ClInclude Include="TextureManager.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
