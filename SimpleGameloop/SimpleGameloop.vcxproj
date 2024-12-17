@@ -138,6 +138,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Saveable.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Sprite.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
