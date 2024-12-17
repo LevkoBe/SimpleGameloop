@@ -1,16 +1,13 @@
 #pragma once
-#include "Saveable.h"
+#include "Sprite.h"
 #include "raylib.h"
 #include "ResourceManager.h"
 
 const float ACCELERATION = 2000.0f;
 const float ROTATION_OFFSET = 20.0f;
 
-class Player : public Saveable {
+class Player : public Sprite {
 private:
-    Vector2 position;
-    float rotation;
-    Vector2 velocity;
     std::string texturePath;
     Vector2 size;
     std::string bounceSoundPath;
@@ -21,13 +18,16 @@ private:
 
 public:
     Player(Vector2 initialPosition, const std::string& texturePath, Vector2 size, const std::string& bounceSoundPath, ResourceManager& resourceManager)
-        : position(initialPosition), rotation(0.0f), velocity{ 0.0f, 0.0f },
-        texturePath(texturePath), size(size), bounceSoundPath(bounceSoundPath), resourceManager(resourceManager) {
+        : Sprite(initialPosition), texturePath(texturePath), size(size), bounceSoundPath(bounceSoundPath), resourceManager(resourceManager) {
         texture = resourceManager.GetTexture(texturePath, size.x, size.y);
         bounceSound = resourceManager.GetSound(bounceSoundPath);
     }
 
-    void Update(float deltaTime) {
+    void Update(float deltaTime, int screenWidth, int screenHeight) override {
+        Move(deltaTime);
+        ConstrainToBounds(screenWidth, screenHeight);
+    }
+    void Move(float deltaTime) {
         if (IsKeyDown(KEY_W)) velocity.y -= ACCELERATION * deltaTime;
         if (IsKeyDown(KEY_S)) velocity.y += ACCELERATION * deltaTime;
         if (IsKeyDown(KEY_A)) velocity.x -= ACCELERATION * deltaTime;
@@ -50,7 +50,7 @@ public:
         if (position.y + halfHeight > screenHeight) { position.y = screenHeight - halfHeight; velocity.y = -velocity.y; PlaySound(bounceSound); }
     }
 
-    void Draw() const {
+    void Draw() const override {
         Rectangle source = { 0, 0, (float)texture.width, (float)texture.height };
         Rectangle destination = { position.x, position.y, size.x, size.y };
         Vector2 origin = { size.x / 2.0f, size.y / 2.0f };
@@ -59,21 +59,15 @@ public:
     }
 
     void Save(std::ofstream& file) const override {
-        file.write((char*)&position, sizeof(position));
-        file.write((char*)&rotation, sizeof(rotation));
-        file.write((char*)&velocity, sizeof(velocity));
+        Sprite::Save(file);
         file.write((char*)&size, sizeof(size));
-
         resourceManager.SaveResourceKey(file, texturePath);
         resourceManager.SaveResourceKey(file, bounceSoundPath);
     }
 
     void Load(std::ifstream& file) override {
-        file.read((char*)&position, sizeof(position));
-        file.read((char*)&rotation, sizeof(rotation));
-        file.read((char*)&velocity, sizeof(velocity));
+        Sprite::Load(file);
         file.read((char*)&size, sizeof(size));
-
         texturePath = resourceManager.LoadResourceKey(file);
         bounceSoundPath = resourceManager.LoadResourceKey(file);
 
