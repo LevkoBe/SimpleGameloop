@@ -3,8 +3,6 @@
 #include "raylib.h"
 #include "ResourceManager.h"
 
-const int SCREEN_WIDTH = 1000;
-const int SCREEN_HEIGHT = 800;
 const float ACCELERATION = 2000.0f;
 const float ROTATION_OFFSET = 20.0f;
 
@@ -25,9 +23,9 @@ public:
         bounceSound = resourceManager.GetSound(bounceSoundPath);
     }
 
-    void Update(float deltaTime) override {
+    void Update(float deltaTime, int screenWidth, int screenHeight) override {
         Move(deltaTime);
-        ConstrainToBounds(SCREEN_WIDTH, SCREEN_HEIGHT);
+        ConstrainToBounds(screenWidth, screenHeight);
     }
     void Move(float deltaTime) {
         if (IsKeyDown(KEY_W)) velocity.y -= ACCELERATION * deltaTime;

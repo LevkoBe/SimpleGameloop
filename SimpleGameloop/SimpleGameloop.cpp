@@ -4,6 +4,8 @@
 #include <ctime>
 #include "Background.h"
 
+const int SCREEN_WIDTH = 1000;
+const int SCREEN_HEIGHT = 800;
 const Color BACKGROUND_COLOR = Color{ 255, 239, 213, 255 };
 const Color PAUSED_TEXT_COLOR = Color{ 255, 165, 0, 255 };
 const Color INSTRUCTION_TEXT_COLOR = Color{ 255, 69, 0, 255 };
@@ -17,7 +19,7 @@ int main() {
     InitAudioDevice();
 
     ResourceManager resourceManager;
-    GameState gameState;
+    GameState gameState(resourceManager);
 
     gameState.Register(std::make_unique<Background>("resources/b4.png", resourceManager));
     gameState.Register(std::make_unique<Player>(
@@ -37,9 +39,7 @@ int main() {
         float deltaTime = GetFrameTime();
 
         if (!isPaused && IsWindowFocused() && !(deltaTime > SUSPICIOUS_DELTA_TIME_THRESHOLD)) {
-            gameState.Update(deltaTime);
-            //player.Update(deltaTime);
-            //player.ConstrainToBounds(SCREEN_WIDTH, SCREEN_HEIGHT);
+            gameState.Update(deltaTime, SCREEN_WIDTH, SCREEN_HEIGHT);
         }
 
         if (IsKeyPressed(KEY_ZERO)) {

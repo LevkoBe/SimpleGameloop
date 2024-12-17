@@ -12,7 +12,7 @@ public:
     Sprite(Vector2 initialPosition = { 0, 0 }, float initialRotation = 0.0f, Vector2 initialVelocity = { 0, 0 })
         : position(initialPosition), rotation(initialRotation), velocity(initialVelocity) {}
 
-    virtual void Update(float deltaTime) {
+    virtual void Update(float deltaTime, int screenWidth, int screenHeight) {
         // Default Update: Do nothing
     }
 

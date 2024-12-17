@@ -2,54 +2,80 @@
 #include <vector>
 #include <fstream>
 #include <memory>
+#include <stdexcept>
 #include "Sprite.h"
+#include "Player.h"
+#include "Background.h"
+
+enum class SpriteType { Player, Background };
 
 class GameState : public Saveable {
 private:
     std::vector<std::unique_ptr<Sprite>> sprites;
+    ResourceManager& resourceManager;
 
 public:
-    // Register a sprite by moving a unique_ptr into the vector
+    GameState(ResourceManager& resourceManager) : resourceManager(resourceManager) {};
+
     void Register(std::unique_ptr<Sprite> sprite) {
         sprites.push_back(std::move(sprite));
     }
 
-    // Update all sprites
-    void Update(float deltaTime) {
-        for (const auto& sprite : sprites) {
-            sprite->Update(deltaTime);
-        }
+    void Update(float deltaTime, int screenWidth, int screenHeight) {
+        for (const auto& sprite : sprites) sprite->Update(deltaTime, screenWidth, screenHeight);
     }
 
-    // Draw all sprites
     void Draw() const {
-        for (const auto& sprite : sprites) {
-            sprite->Draw();
-        }
+        for (const auto& sprite : sprites) sprite->Draw();
     }
 
-    // Save all sprites
     void Save(std::ofstream& file) const override {
         size_t count = sprites.size();
         file.write(reinterpret_cast<const char*>(&count), sizeof(count));
 
         for (const auto& sprite : sprites) {
+            if (dynamic_cast<Player*>(sprite.get())) {
+                SpriteType type = SpriteType::Player;
+                file.write(reinterpret_cast<const char*>(&type), sizeof(type));
+            }
+            else if (dynamic_cast<Background*>(sprite.get())) {
+                SpriteType type = SpriteType::Background;
+                file.write(reinterpret_cast<const char*>(&type), sizeof(type));
+            }
+            else throw std::runtime_error("Unknown sprite type during saving");
+
             sprite->Save(file);
         }
     }
 
-    // Load all sprites
     void Load(std::ifstream& file) override {
-        // Clear existing sprites
         sprites.clear();
 
         size_t count = 0;
         file.read(reinterpret_cast<char*>(&count), sizeof(count));
 
         for (size_t i = 0; i < count; ++i) {
-            auto sprite = std::make_unique<Sprite>(); // Default Sprite instantiation
-            sprite->Load(file);
-            sprites.push_back(std::move(sprite));
+            SpriteType type;
+            file.read(reinterpret_cast<char*>(&type), sizeof(type));
+
+            std::unique_ptr<Sprite> sprite;
+
+            switch (type) {
+            case SpriteType::Player:
+                sprite = std::make_unique<Player>(
+                    Vector2{ 0, 0 }, "", Vector2{ 0, 0 }, "", resourceManager);
+                break;
+            case SpriteType::Background:
+                sprite = std::make_unique<Background>("", resourceManager);
+                break;
+            default:
+                throw std::runtime_error("Unknown sprite type during loading");
+            }
+
+            if (sprite) {
+                sprite->Load(file);
+                sprites.push_back(std::move(sprite));
+            }
         }
     }
 };
