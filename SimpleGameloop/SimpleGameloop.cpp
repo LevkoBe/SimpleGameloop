@@ -21,7 +21,7 @@ int main() {
     ResourceManager resourceManager;
     GameState gameState(resourceManager);
 
-    gameState.Register(std::make_unique<Background>("resources/b4.png", resourceManager));
+    gameState.Register(std::make_unique<Background>("resources/b5.png", resourceManager));
     gameState.Register(std::make_unique<Player>(
         Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f },
         "resources/p1.png",

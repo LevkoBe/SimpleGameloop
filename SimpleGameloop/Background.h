@@ -25,14 +25,17 @@ public:
         position.y += scrollDelta.y * scrollSpeed;
 
         if (position.x <= -texture.width) position.x += texture.width;
-        if (position.x >= screenWidth) position.x -= texture.width;
+        if (position.x >= screenWidth) position.x = texture.width;
         if (position.y <= -texture.height) position.y += texture.height;
         if (position.y >= screenHeight) position.y -= texture.height;
+
+        position.x = position.x <= 0 ? position.x : position.x - screenWidth;
+        position.y = position.y <= 0 ? position.y : position.y - screenHeight;
     }
 
     void Draw() const override {
         for (int x = static_cast<int>(position.x); x < GetScreenWidth(); x += texture.width) {
-            for (int y = 0; y < GetScreenHeight(); y += texture.height) {
+            for (int y = static_cast<int>(position.y); y < GetScreenHeight(); y += texture.height) {
                 DrawTexture(texture, x, y, WHITE);
             }
         }
