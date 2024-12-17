@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "ResourceManager.h"
-
+#include "GameState.h"
+#include <ctime>
 
 const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 800;
@@ -9,20 +10,19 @@ const Color PAUSED_TEXT_COLOR = Color{ 255, 165, 0, 255 };
 const Color INSTRUCTION_TEXT_COLOR = Color{ 255, 69, 0, 255 };
 const float SUSPICIOUS_DELTA_TIME_THRESHOLD = 0.1f;
 const float MAX_FPS = 60.0f;
-const char* SAVE_FILE = "savegame.dat";
+const std::string SAVE_FILE = "savegame.dat";
 
-
-int main(void) {
+int main() {
     srand(static_cast<unsigned int>(time(0)));
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Simple game loop");
     InitAudioDevice();
 
-    Texture2D background = TextureManager::LoadTextureWithFallback("resources/b4.png", SCREEN_WIDTH, SCREEN_HEIGHT);
-    Sound bounceSound = LoadSound("resources/audiomass-output.mp3");
-
-    Player player(Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f }, "resources/p1.png", { 180, 180 }, bounceSound);
     ResourceManager resourceManager;
-    resourceManager.Register(&player);
+    GameState gameState;
+
+    Texture2D backgroundTexture = resourceManager.GetTexture("resources/b4.png");
+    Player player({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f }, "resources/p1.png", { 180, 180 }, "resources/audiomass-output.mp3", resourceManager);
+    gameState.Register(&player);
 
     bool isPaused = false;
     SetTargetFPS(MAX_FPS);
@@ -37,17 +37,27 @@ int main(void) {
             player.ConstrainToBounds(SCREEN_WIDTH, SCREEN_HEIGHT);
         }
 
-        if (IsKeyPressed(KEY_ZERO)) resourceManager.SaveAll(SAVE_FILE);
-        if (IsKeyPressed(KEY_ONE)) resourceManager.LoadAll(SAVE_FILE);
+        if (IsKeyPressed(KEY_ZERO)) {
+            std::ofstream file(SAVE_FILE, std::ios::binary);
+            if (file.is_open()) {
+                gameState.Save(file);
+                file.close();
+            }
+        }
+
+        if (IsKeyPressed(KEY_ONE)) {
+            std::ifstream file(SAVE_FILE, std::ios::binary);
+            if (file.is_open()) {
+                gameState.Load(file);
+                file.close();
+            }
+        }
 
         BeginDrawing();
         ClearBackground(BACKGROUND_COLOR);
+        DrawTexture(backgroundTexture, 0, 0, WHITE);
 
-        DrawTexture(background, 0, 0, WHITE);
-
-        if (isPaused) {
-            DrawText("PAUSED", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 - 10, 20, PAUSED_TEXT_COLOR);
-        }
+        if (isPaused) DrawText("PAUSED", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 - 10, 20, PAUSED_TEXT_COLOR);
         else {
             DrawText("Use WASD to control speed, P to pause.", 10, 10, 20, INSTRUCTION_TEXT_COLOR);
             DrawText("Press 0 to Save, 1 to Load.", 10, 30, 20, INSTRUCTION_TEXT_COLOR);
@@ -57,7 +67,7 @@ int main(void) {
         EndDrawing();
     }
 
-    UnloadTexture(background);
+    resourceManager.UnloadAll();
     CloseWindow();
     return 0;
 }

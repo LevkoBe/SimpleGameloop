@@ -28,7 +28,7 @@
     <ClInclude Include="Saveable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TextureManager.h">
+    <ClInclude Include="GameState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">

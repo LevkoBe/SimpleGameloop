@@ -1,29 +1,30 @@
 #pragma once
 #include "Saveable.h"
-#include <raylib.h>
-#include "TextureManager.h"
+#include "raylib.h"
+#include "ResourceManager.h"
 
 const float ACCELERATION = 2000.0f;
 const float ROTATION_OFFSET = 20.0f;
 
-
 class Player : public Saveable {
-public:
+private:
     Vector2 position;
     float rotation;
     Vector2 velocity;
-    Texture2D texture;
     std::string texturePath;
     Vector2 size;
+    std::string bounceSoundPath;
+    Texture2D texture;
     Sound bounceSound;
 
-    Player(Vector2 initialPosition, const char* texturePath, Vector2 size, Sound bounceSound)
-        : position(initialPosition), rotation(0.0f), velocity{ 0.0f, 0.0f }, texturePath(texturePath), size(size), bounceSound(bounceSound) {
-        texture = TextureManager::LoadTextureWithFallback(texturePath, size.x, size.y);
-    }
+    ResourceManager& resourceManager;
 
-    ~Player() {
-        UnloadTexture(texture);
+public:
+    Player(Vector2 initialPosition, const std::string& texturePath, Vector2 size, const std::string& bounceSoundPath, ResourceManager& resourceManager)
+        : position(initialPosition), rotation(0.0f), velocity{ 0.0f, 0.0f },
+        texturePath(texturePath), size(size), bounceSoundPath(bounceSoundPath), resourceManager(resourceManager) {
+        texture = resourceManager.GetTexture(texturePath, size.x, size.y);
+        bounceSound = resourceManager.GetSound(bounceSoundPath);
     }
 
     void Update(float deltaTime) {
@@ -61,25 +62,22 @@ public:
         file.write((char*)&position, sizeof(position));
         file.write((char*)&rotation, sizeof(rotation));
         file.write((char*)&velocity, sizeof(velocity));
-        size_t pathLength = texturePath.length();
-        file.write((char*)&pathLength, sizeof(pathLength));
-        file.write(texturePath.c_str(), pathLength);
         file.write((char*)&size, sizeof(size));
+
+        resourceManager.SaveResourceKey(file, texturePath);
+        resourceManager.SaveResourceKey(file, bounceSoundPath);
     }
 
     void Load(std::ifstream& file) override {
         file.read((char*)&position, sizeof(position));
         file.read((char*)&rotation, sizeof(rotation));
         file.read((char*)&velocity, sizeof(velocity));
-        size_t pathLength;
-        file.read((char*)&pathLength, sizeof(pathLength));
-        char* buffer = new char[pathLength + 1];
-        file.read(buffer, pathLength);
-        buffer[pathLength] = '\0';
-        texturePath = buffer;
-        delete[] buffer;
         file.read((char*)&size, sizeof(size));
-        UnloadTexture(texture);
-        texture = TextureManager::LoadTextureWithFallback(texturePath.c_str(), size.x, size.y);
+
+        texturePath = resourceManager.LoadResourceKey(file);
+        bounceSoundPath = resourceManager.LoadResourceKey(file);
+
+        texture = resourceManager.GetTexture(texturePath, size.x, size.y);
+        bounceSound = resourceManager.GetSound(bounceSoundPath);
     }
 };
