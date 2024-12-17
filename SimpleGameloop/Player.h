@@ -3,6 +3,8 @@
 #include "raylib.h"
 #include "ResourceManager.h"
 
+const int SCREEN_WIDTH = 1000;
+const int SCREEN_HEIGHT = 800;
 const float ACCELERATION = 2000.0f;
 const float ROTATION_OFFSET = 20.0f;
 
@@ -24,6 +26,10 @@ public:
     }
 
     void Update(float deltaTime) override {
+        Move(deltaTime);
+        ConstrainToBounds(SCREEN_WIDTH, SCREEN_HEIGHT);
+    }
+    void Move(float deltaTime) {
         if (IsKeyDown(KEY_W)) velocity.y -= ACCELERATION * deltaTime;
         if (IsKeyDown(KEY_S)) velocity.y += ACCELERATION * deltaTime;
         if (IsKeyDown(KEY_A)) velocity.x -= ACCELERATION * deltaTime;

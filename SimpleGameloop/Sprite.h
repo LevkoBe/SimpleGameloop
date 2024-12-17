@@ -12,8 +12,13 @@ public:
     Sprite(Vector2 initialPosition = { 0, 0 }, float initialRotation = 0.0f, Vector2 initialVelocity = { 0, 0 })
         : position(initialPosition), rotation(initialRotation), velocity(initialVelocity) {}
 
-    virtual void Update(float deltaTime) = 0;
-    virtual void Draw() const = 0;
+    virtual void Update(float deltaTime) {
+        // Default Update: Do nothing
+    }
+
+    virtual void Draw() const {
+        // Default Draw: Represent a blank sprite
+    }
 
     void Save(std::ofstream& file) const override {
         file.write((char*)&position, sizeof(position));

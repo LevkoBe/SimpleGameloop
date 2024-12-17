@@ -2,9 +2,8 @@
 #include "ResourceManager.h"
 #include "GameState.h"
 #include <ctime>
+#include "Background.h"
 
-const int SCREEN_WIDTH = 1000;
-const int SCREEN_HEIGHT = 800;
 const Color BACKGROUND_COLOR = Color{ 255, 239, 213, 255 };
 const Color PAUSED_TEXT_COLOR = Color{ 255, 165, 0, 255 };
 const Color INSTRUCTION_TEXT_COLOR = Color{ 255, 69, 0, 255 };
@@ -20,9 +19,14 @@ int main() {
     ResourceManager resourceManager;
     GameState gameState;
 
-    Texture2D backgroundTexture = resourceManager.GetTexture("resources/b4.png");
-    Player player({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f }, "resources/p1.png", { 180, 180 }, "resources/audiomass-output.mp3", resourceManager);
-    gameState.Register(&player);
+    gameState.Register(std::make_unique<Background>("resources/b4.png", resourceManager));
+    gameState.Register(std::make_unique<Player>(
+        Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f },
+        "resources/p1.png",
+        Vector2{ 180, 180 },
+        "resources/audiomass-output.mp3",
+        resourceManager
+    ));
 
     bool isPaused = false;
     SetTargetFPS(MAX_FPS);
@@ -33,8 +37,9 @@ int main() {
         float deltaTime = GetFrameTime();
 
         if (!isPaused && IsWindowFocused() && !(deltaTime > SUSPICIOUS_DELTA_TIME_THRESHOLD)) {
-            player.Update(deltaTime);
-            player.ConstrainToBounds(SCREEN_WIDTH, SCREEN_HEIGHT);
+            gameState.Update(deltaTime);
+            //player.Update(deltaTime);
+            //player.ConstrainToBounds(SCREEN_WIDTH, SCREEN_HEIGHT);
         }
 
         if (IsKeyPressed(KEY_ZERO)) {
@@ -55,13 +60,12 @@ int main() {
 
         BeginDrawing();
         ClearBackground(BACKGROUND_COLOR);
-        DrawTexture(backgroundTexture, 0, 0, WHITE);
 
         if (isPaused) DrawText("PAUSED", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 - 10, 20, PAUSED_TEXT_COLOR);
         else {
+            gameState.Draw();
             DrawText("Use WASD to control speed, P to pause.", 10, 10, 20, INSTRUCTION_TEXT_COLOR);
             DrawText("Press 0 to Save, 1 to Load.", 10, 30, 20, INSTRUCTION_TEXT_COLOR);
-            player.Draw();
         }
 
         EndDrawing();
