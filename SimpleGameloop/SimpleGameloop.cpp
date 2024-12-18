@@ -1,8 +1,8 @@
 #include "Player.h"
 #include "ResourceManager.h"
 #include "GameState.h"
-#include <ctime>
 #include "Background.h"
+#include <ctime>
 
 const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 800;
@@ -15,20 +15,23 @@ const std::string SAVE_FILE = "savegame.dat";
 
 int main() {
     srand(static_cast<unsigned int>(time(0)));
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Simple game loop");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Game with Scene Graph and Quadtree");
     InitAudioDevice();
 
     ResourceManager resourceManager;
-    GameState gameState(resourceManager);
+    GameState gameState(resourceManager, { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT });
 
-    gameState.Register(std::make_unique<Background>("resources/b5.png", resourceManager));
-    gameState.Register(std::make_unique<Player>(
+    auto backgroundNode = std::make_shared<SceneNode>(std::make_shared<Background>("resources/b5.png", resourceManager));
+    gameState.Register(std::move(backgroundNode));
+
+    auto playerNode = std::make_shared<SceneNode>(std::make_shared<Player>(
         Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f },
         "resources/p1.png",
         Vector2{ 180, 180 },
         "resources/audiomass-output.mp3",
         resourceManager
     ));
+    gameState.Register(std::move(playerNode));
 
     bool isPaused = false;
     SetTargetFPS(MAX_FPS);
