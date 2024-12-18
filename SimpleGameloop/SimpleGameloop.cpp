@@ -21,7 +21,7 @@ int main() {
     ResourceManager resourceManager;
     GameState gameState(resourceManager, { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT });
 
-    auto backgroundNode = std::make_shared<SceneNode>(std::make_shared<Background>("resources/b5.png", resourceManager));
+    auto backgroundNode = std::make_shared<SceneNode>(std::make_shared<Background>("resources/b5.png", resourceManager), resourceManager);
     gameState.Register(std::move(backgroundNode));
 
     auto playerNode = std::make_shared<SceneNode>(std::make_shared<Player>(
@@ -30,7 +30,7 @@ int main() {
         Vector2{ 180, 180 },
         "resources/audiomass-output.mp3",
         resourceManager
-    ));
+    ), resourceManager);
     gameState.Register(std::move(playerNode));
 
     bool isPaused = false;

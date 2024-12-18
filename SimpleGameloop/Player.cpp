@@ -3,7 +3,7 @@
 #include <cmath>
 
 Player::Player(Vector2 initialPosition, const std::string& texturePath, Vector2 size, const std::string& bounceSoundPath, ResourceManager& resourceManager)
-    : Sprite(initialPosition), texturePath(texturePath), size(size), bounceSoundPath(bounceSoundPath), resourceManager(resourceManager) {
+    : Sprite(initialPosition, size), texturePath(texturePath), bounceSoundPath(bounceSoundPath), resourceManager(resourceManager) {
     texture = resourceManager.GetTexture(texturePath, size.x, size.y);
     bounceSound = resourceManager.GetSound(bounceSoundPath);
 }
@@ -46,14 +46,12 @@ void Player::Draw() const {
 
 void Player::Save(std::ofstream& file) const {
     Sprite::Save(file);
-    file.write((char*)&size, sizeof(size));
     resourceManager.SaveResourceKey(file, texturePath);
     resourceManager.SaveResourceKey(file, bounceSoundPath);
 }
 
 void Player::Load(std::ifstream& file) {
     Sprite::Load(file);
-    file.read((char*)&size, sizeof(size));
     texturePath = resourceManager.LoadResourceKey(file);
     bounceSoundPath = resourceManager.LoadResourceKey(file);
 

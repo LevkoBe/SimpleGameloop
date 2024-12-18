@@ -19,7 +19,7 @@ public:
     }
 
     void Update(float deltaTime, int screenWidth, int screenHeight) {
-        for (auto& node : sceneNodes) node->Update(deltaTime);
+        for (auto& node : sceneNodes) node->Update(deltaTime, screenWidth, screenHeight);
     }
 
     void Draw() const {
@@ -38,7 +38,7 @@ public:
 
         sceneNodes.clear();
         for (size_t i = 0; i < nodeCount; ++i) {
-            auto node = std::make_shared<SceneNode>();
+            auto node = std::make_shared<SceneNode>(resourceManager);
             node->Load(file);
             sceneNodes.push_back(std::move(node));
         }

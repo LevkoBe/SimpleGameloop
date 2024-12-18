@@ -16,6 +16,7 @@ void Sprite::Save(std::ofstream& file) const {
     file.write((char*)&rotation, sizeof(rotation));
     file.write((char*)&velocity, sizeof(velocity));
     file.write((char*)&size, sizeof(size));
+    file.write((char*)&collidable, sizeof(collidable));
 }
 
 void Sprite::Load(std::ifstream& file) {
@@ -23,4 +24,6 @@ void Sprite::Load(std::ifstream& file) {
     file.read((char*)&rotation, sizeof(rotation));
     file.read((char*)&velocity, sizeof(velocity));
     file.read((char*)&size, sizeof(size));
+    file.read((char*)&collidable, sizeof(collidable));
 }
+
