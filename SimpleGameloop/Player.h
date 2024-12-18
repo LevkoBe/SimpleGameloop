@@ -8,7 +8,6 @@ const float ROTATION_OFFSET = 20.0f;
 class Player : public Sprite {
 private:
     std::string texturePath;
-    Vector2 size;
     std::string bounceSoundPath;
     Texture2D texture;
     Sound bounceSound;

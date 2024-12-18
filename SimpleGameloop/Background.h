@@ -9,7 +9,6 @@ private:
     Texture2D texture;
     ResourceManager& resourceManager;
 
-    Vector2 position;
     float scrollSpeed;
 
 public:
