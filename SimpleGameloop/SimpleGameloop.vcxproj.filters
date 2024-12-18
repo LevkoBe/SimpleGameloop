@@ -39,9 +39,6 @@
     <ClCompile Include="SceneNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Quadtree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\p1.png">

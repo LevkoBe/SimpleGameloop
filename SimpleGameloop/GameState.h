@@ -3,23 +3,42 @@
 #include <vector>
 #include <memory>
 #include <fstream>
+#include "Quadtree.h"
 
 class GameState {
 private:
     ResourceManager& resourceManager;
     Rectangle worldBounds;
     std::vector<std::shared_ptr<SceneNode>> sceneNodes;
+    Quadtree quadtree;
 
 public:
     GameState(ResourceManager& resourceManager, Rectangle worldBounds)
-        : resourceManager(resourceManager), worldBounds(worldBounds) {}
+        : resourceManager(resourceManager), worldBounds(worldBounds), quadtree(worldBounds) {}
 
     void Register(std::shared_ptr<SceneNode> node) {
         sceneNodes.push_back(std::move(node));
     }
 
     void Update(float deltaTime, int screenWidth, int screenHeight) {
-        for (auto& node : sceneNodes) node->Update(deltaTime, screenWidth, screenHeight);
+        quadtree.Clear();
+        for (auto& node : sceneNodes) quadtree.Insert(node);
+
+        for (auto& node : sceneNodes) {
+            Rectangle bounds = node->GetBounds();
+            auto nearbyNodes = quadtree.Retrieve(bounds);
+
+            for (const auto& nearbyNode : nearbyNodes) {
+                if (node != nearbyNode) {
+                    // Todo: handle collision
+                    // CheckCollisionRecs(bounds, nearbyNode->GetBounds())
+                    // CheckCollisionCircleRec
+                    // CheckCollisionCircles
+                    // TODO: add shape property to the Sprite
+                }
+            }
+            node->Update(deltaTime, screenWidth, screenHeight);
+        }
     }
 
     void Draw() const {

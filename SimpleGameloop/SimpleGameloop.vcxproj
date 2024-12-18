@@ -131,7 +131,6 @@
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Background.h" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="SceneNode.h" />

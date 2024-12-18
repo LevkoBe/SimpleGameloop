@@ -64,7 +64,6 @@ Rectangle SceneNode::GetBounds() const {
 }
 
 void SceneNode::Save(std::ofstream& file) const {
-    // Save the type of the sprite (if exists)
     if (dynamic_cast<Player*>(sprite.get())) {
         SpriteType type = SpriteType::Player;
         file.write(reinterpret_cast<const char*>(&type), sizeof(type));
@@ -77,25 +76,20 @@ void SceneNode::Save(std::ofstream& file) const {
         throw std::runtime_error("Unknown sprite type during saving");
     }
 
-    // Save the sprite itself
     sprite->Save(file);
 
-    // Save the number of children
     size_t childCount = children.size();
     file.write(reinterpret_cast<const char*>(&childCount), sizeof(childCount));
 
-    // Save each child node recursively
     for (const auto& child : children) {
         child->Save(file);
     }
 }
 
 void SceneNode::Load(std::ifstream& file) {
-    // Read the type of the sprite
     SpriteType type;
     file.read(reinterpret_cast<char*>(&type), sizeof(type));
 
-    // Create the correct type of sprite
     switch (type) {
     case SpriteType::Player:
         sprite = std::make_shared<Player>(Vector2{ 0, 0 }, "", Vector2{ 0, 0 }, "", resourceManager);
@@ -107,14 +101,11 @@ void SceneNode::Load(std::ifstream& file) {
         throw std::runtime_error("Unknown sprite type during loading");
     }
 
-    // Load the sprite data
     sprite->Load(file);
 
-    // Read the number of children
     size_t childCount;
     file.read(reinterpret_cast<char*>(&childCount), sizeof(childCount));
 
-    // Load each child node recursively
     for (size_t i = 0; i < childCount; ++i) {
         auto child = std::make_shared<SceneNode>(resourceManager);
         child->Load(file);
