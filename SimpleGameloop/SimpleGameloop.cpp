@@ -21,17 +21,29 @@ int main() {
     ResourceManager resourceManager;
     GameState gameState(resourceManager, { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT });
 
-    auto backgroundNode = std::make_shared<SceneNode>(std::make_shared<Background>("resources/b5.png", resourceManager), resourceManager);
+    auto backgroundNode = std::make_shared<SceneNode>(std::make_shared<Background>(resourceManager), resourceManager);
     gameState.Register(std::move(backgroundNode));
 
-    auto playerNode = std::make_shared<SceneNode>(std::make_shared<Player>(
-        Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f },
-        "resources/p1.png",
+    auto playerNode1 = std::make_shared<SceneNode>(std::make_shared<Player>(
+        resourceManager,
+        Vector2{ 1 * SCREEN_WIDTH / 4.0f, SCREEN_HEIGHT / 2.0f },
         Vector2{ 180, 180 },
-        "resources/audiomass-output.mp3",
-        resourceManager
+        ShapeType::Rectangular
     ), resourceManager);
-    gameState.Register(std::move(playerNode));
+    auto playerNode2 = std::make_shared<SceneNode>(std::make_shared<Player>(
+        resourceManager,
+        Vector2{ 2 * SCREEN_WIDTH / 4.0f, SCREEN_HEIGHT / 2.0f },
+        Vector2{ 180, 180 },
+        ShapeType::Rectangular
+    ), resourceManager);
+    auto playerNode3 = std::make_shared<SceneNode>(std::make_shared<Player>(
+        resourceManager,
+        Vector2{ 3 * SCREEN_WIDTH / 4.0f, SCREEN_HEIGHT / 2.0f },
+        Vector2{ 180, 180 }
+    ), resourceManager);
+    gameState.Register(std::move(playerNode1));
+    gameState.Register(std::move(playerNode2));
+    gameState.Register(std::move(playerNode3));
 
     bool isPaused = false;
     SetTargetFPS(MAX_FPS);

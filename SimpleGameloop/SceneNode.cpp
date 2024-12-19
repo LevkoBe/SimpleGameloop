@@ -4,8 +4,8 @@
 #include "Background.h"
 
 enum class SpriteType {
-    Player,
-    Background
+    PlayerSprite,
+    BackgroundSprite
 };
 
 SceneNode::SceneNode(ResourceManager& resourceManager)
@@ -45,6 +45,10 @@ void SceneNode::Draw() const {
     for (const auto& child : children) child->Draw();
 }
 
+bool SceneNode::IsCollidable() const {
+    return sprite->collidable;
+}
+
 Vector2 SceneNode::GetGlobalPosition() const {
     if (parent) {
         Vector2 parentPosition = parent->GetGlobalPosition();
@@ -60,61 +64,68 @@ float SceneNode::GetGlobalRotation() const {
 
 Rectangle SceneNode::GetBounds() const {
     Vector2 globalPosition = GetGlobalPosition();
-    return { globalPosition.x, globalPosition.y, sprite->size.x, sprite->size.y };
+    return { globalPosition.x - sprite->size.x / 2, globalPosition.y - sprite->size.y / 2, sprite->size.x, sprite->size.y };
+}
+
+ShapeType SceneNode::GetShape() const {
+    return sprite->shape;
+}
+
+Vector2 SceneNode::GetSize() const {
+    return sprite->size;
+}
+
+Vector2 SceneNode::GetVelocity() const {
+    return sprite->velocity;
+}
+
+void SceneNode::SetVelocity(const Vector2& velocity) {
+    sprite->velocity = velocity;
 }
 
 void SceneNode::Save(std::ofstream& file) const {
-    // Save the type of the sprite (if exists)
     if (dynamic_cast<Player*>(sprite.get())) {
-        SpriteType type = SpriteType::Player;
+        SpriteType type = SpriteType::PlayerSprite;
         file.write(reinterpret_cast<const char*>(&type), sizeof(type));
     }
     else if (dynamic_cast<Background*>(sprite.get())) {
-        SpriteType type = SpriteType::Background;
+        SpriteType type = SpriteType::BackgroundSprite;
         file.write(reinterpret_cast<const char*>(&type), sizeof(type));
     }
     else {
         throw std::runtime_error("Unknown sprite type during saving");
     }
 
-    // Save the sprite itself
     sprite->Save(file);
 
-    // Save the number of children
     size_t childCount = children.size();
     file.write(reinterpret_cast<const char*>(&childCount), sizeof(childCount));
 
-    // Save each child node recursively
     for (const auto& child : children) {
         child->Save(file);
     }
 }
 
 void SceneNode::Load(std::ifstream& file) {
-    // Read the type of the sprite
     SpriteType type;
     file.read(reinterpret_cast<char*>(&type), sizeof(type));
 
-    // Create the correct type of sprite
     switch (type) {
-    case SpriteType::Player:
-        sprite = std::make_shared<Player>(Vector2{ 0, 0 }, "", Vector2{ 0, 0 }, "", resourceManager);
+    case SpriteType::PlayerSprite:
+        sprite = std::make_shared<Player>(resourceManager, Vector2{ 0, 0 }, Vector2{ 0, 0 });
         break;
-    case SpriteType::Background:
-        sprite = std::make_shared<Background>("", resourceManager);
+    case SpriteType::BackgroundSprite:
+        sprite = std::make_shared<Background>(resourceManager);
         break;
     default:
         throw std::runtime_error("Unknown sprite type during loading");
     }
 
-    // Load the sprite data
     sprite->Load(file);
 
-    // Read the number of children
     size_t childCount;
     file.read(reinterpret_cast<char*>(&childCount), sizeof(childCount));
 
-    // Load each child node recursively
     for (size_t i = 0; i < childCount; ++i) {
         auto child = std::make_shared<SceneNode>(resourceManager);
         child->Load(file);

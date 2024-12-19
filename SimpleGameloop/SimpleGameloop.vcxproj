@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,7 +131,6 @@
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Background.h" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="SceneNode.h" />
@@ -147,6 +146,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Saveable.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="ShapeType.h" />
     <ClInclude Include="Sprite.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
