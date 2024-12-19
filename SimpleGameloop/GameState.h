@@ -5,6 +5,7 @@
 #include <fstream>
 #include "Quadtree.h"
 #include <numbers>
+#include <iostream>
 double M_PI = std::numbers::pi;
 
 class GameState {
@@ -106,14 +107,22 @@ public:
     }
 
     void Load(std::ifstream& file) {
-        size_t nodeCount;
-        file.read(reinterpret_cast<char*>(&nodeCount), sizeof(nodeCount));
+        std::vector<std::shared_ptr<SceneNode>> previousState = sceneNodes;
 
-        sceneNodes.clear();
-        for (size_t i = 0; i < nodeCount; ++i) {
-            auto node = std::make_shared<SceneNode>(resourceManager);
-            node->Load(file);
-            sceneNodes.push_back(std::move(node));
+        try {
+            size_t nodeCount;
+            file.read(reinterpret_cast<char*>(&nodeCount), sizeof(nodeCount));
+
+            sceneNodes.clear();
+            for (size_t i = 0; i < nodeCount; ++i) {
+                auto node = std::make_shared<SceneNode>(resourceManager);
+                node->Load(file);
+                sceneNodes.push_back(std::move(node));
+            }
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Error loading game state: " << e.what() << std::endl;
+            sceneNodes = previousState;
         }
     }
 };
