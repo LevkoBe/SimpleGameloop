@@ -45,6 +45,10 @@ void SceneNode::Draw() const {
     for (const auto& child : children) child->Draw();
 }
 
+bool SceneNode::IsCollidable() const {
+    return sprite->collidable;
+}
+
 Vector2 SceneNode::GetGlobalPosition() const {
     if (parent) {
         Vector2 parentPosition = parent->GetGlobalPosition();
@@ -60,7 +64,23 @@ float SceneNode::GetGlobalRotation() const {
 
 Rectangle SceneNode::GetBounds() const {
     Vector2 globalPosition = GetGlobalPosition();
-    return { globalPosition.x, globalPosition.y, sprite->size.x, sprite->size.y };
+    return { globalPosition.x - sprite->size.x / 2, globalPosition.y - sprite->size.y / 2, sprite->size.x, sprite->size.y };
+}
+
+ShapeType SceneNode::GetShape() const {
+    return sprite->shape;
+}
+
+Vector2 SceneNode::GetSize() const {
+    return sprite->size;
+}
+
+Vector2 SceneNode::GetVelocity() const {
+    return sprite->velocity;
+}
+
+void SceneNode::SetVelocity(const Vector2& velocity) {
+    sprite->velocity = velocity;
 }
 
 void SceneNode::Save(std::ofstream& file) const {

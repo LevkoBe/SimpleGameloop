@@ -25,10 +25,15 @@ public:
     void Update(float deltaTime, int screenWidth, int screenHeight);
     void Draw() const;
 
+    bool IsCollidable() const;
     Vector2 GetGlobalPosition() const;
     float GetGlobalRotation() const;
 
     Rectangle GetBounds() const;
+    ShapeType GetShape() const;
+    Vector2 GetSize() const;
+    Vector2 GetVelocity() const;
+    void SetVelocity(const Vector2& velocity);
 
     virtual void Save(std::ofstream& file) const;
     virtual void Load(std::ifstream& file);

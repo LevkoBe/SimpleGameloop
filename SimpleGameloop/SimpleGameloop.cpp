@@ -27,12 +27,14 @@ int main() {
     auto playerNode1 = std::make_shared<SceneNode>(std::make_shared<Player>(
         resourceManager,
         Vector2{ 1 * SCREEN_WIDTH / 4.0f, SCREEN_HEIGHT / 2.0f },
-        Vector2{ 180, 180 }
+        Vector2{ 180, 180 },
+        ShapeType::Rectangular
     ), resourceManager);
     auto playerNode2 = std::make_shared<SceneNode>(std::make_shared<Player>(
         resourceManager,
         Vector2{ 2 * SCREEN_WIDTH / 4.0f, SCREEN_HEIGHT / 2.0f },
-        Vector2{ 180, 180 }
+        Vector2{ 180, 180 },
+        ShapeType::Rectangular
     ), resourceManager);
     auto playerNode3 = std::make_shared<SceneNode>(std::make_shared<Player>(
         resourceManager,
