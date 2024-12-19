@@ -12,7 +12,7 @@ private:
     float scrollSpeed;
 
 public:
-    Background(const std::string& texturePath, ResourceManager& resourceManager, float scrollSpeed = 100.0f);
+    Background(ResourceManager& resourceManager, const std::string& texturePath = "resources/background.png", float scrollSpeed = 100.0f);
 
     void Update(float deltaTime, int screenWidth, int screenHeight) override;
     void Draw() const override;

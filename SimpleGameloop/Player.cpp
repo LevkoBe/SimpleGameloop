@@ -1,9 +1,18 @@
 #include "Player.h"
-#include "raylib.h"
-#include <cmath>
 
-Player::Player(Vector2 initialPosition, const std::string& texturePath, Vector2 size, const std::string& bounceSoundPath, ResourceManager& resourceManager)
-    : Sprite(initialPosition, size), texturePath(texturePath), bounceSoundPath(bounceSoundPath), resourceManager(resourceManager) {
+Player::Player(
+    ResourceManager& resourceManager,
+    Vector2 initialPosition,
+    Vector2 size,
+    ShapeType shape,
+    const std::string& texturePath,
+    const std::string& bounceSoundPath,
+    bool collidable
+) : Sprite(initialPosition, size, 0.0, { 0, 0 }, shape, collidable),
+texturePath(texturePath),
+bounceSoundPath(bounceSoundPath),
+resourceManager(resourceManager)
+{
     texture = resourceManager.GetTexture(texturePath, size.x, size.y);
     bounceSound = resourceManager.GetSound(bounceSoundPath);
 }
@@ -30,10 +39,26 @@ void Player::ConstrainToBounds(int screenWidth, int screenHeight) {
     float halfWidth = size.x / 2.0f;
     float halfHeight = size.y / 2.0f;
 
-    if (position.x - halfWidth < 0) { position.x = halfWidth; velocity.x = -velocity.x; PlaySound(bounceSound); }
-    if (position.x + halfWidth > screenWidth) { position.x = screenWidth - halfWidth; velocity.x = -velocity.x; PlaySound(bounceSound); }
-    if (position.y - halfHeight < 0) { position.y = halfHeight; velocity.y = -velocity.y; PlaySound(bounceSound); }
-    if (position.y + halfHeight > screenHeight) { position.y = screenHeight - halfHeight; velocity.y = -velocity.y; PlaySound(bounceSound); }
+    if (position.x - halfWidth < 0) {
+        position.x = halfWidth;
+        velocity.x = -velocity.x;
+        PlaySound(bounceSound);
+    }
+    if (position.x + halfWidth > screenWidth) {
+        position.x = screenWidth - halfWidth;
+        velocity.x = -velocity.x;
+        PlaySound(bounceSound);
+    }
+    if (position.y - halfHeight < 0) {
+        position.y = halfHeight;
+        velocity.y = -velocity.y;
+        PlaySound(bounceSound);
+    }
+    if (position.y + halfHeight > screenHeight) {
+        position.y = screenHeight - halfHeight;
+        velocity.y = -velocity.y;
+        PlaySound(bounceSound);
+    }
 }
 
 void Player::Draw() const {

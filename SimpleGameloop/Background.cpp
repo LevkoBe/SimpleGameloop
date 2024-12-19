@@ -1,7 +1,7 @@
 #include "Background.h"
 
-Background::Background(const std::string& texturePath, ResourceManager& resourceManager, float scrollSpeed)
-    : texturePath(texturePath), resourceManager(resourceManager), scrollSpeed(scrollSpeed) {
+Background::Background(ResourceManager& resourceManager, const std::string& texturePath, float scrollSpeed)
+    : Sprite({ 0, 0 }, { 0, 0 }, 0.0, { 0, 0 }, Rectangular, false), texturePath(texturePath), resourceManager(resourceManager), scrollSpeed(scrollSpeed) {
     texture = resourceManager.GetTexture(texturePath);
     size = Vector2{ static_cast<float>(texture.width), static_cast<float>(texture.height) };
 }

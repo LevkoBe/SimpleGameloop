@@ -4,8 +4,8 @@
 #include "Background.h"
 
 enum class SpriteType {
-    Player,
-    Background
+    PlayerSprite,
+    BackgroundSprite
 };
 
 SceneNode::SceneNode(ResourceManager& resourceManager)
@@ -65,11 +65,11 @@ Rectangle SceneNode::GetBounds() const {
 
 void SceneNode::Save(std::ofstream& file) const {
     if (dynamic_cast<Player*>(sprite.get())) {
-        SpriteType type = SpriteType::Player;
+        SpriteType type = SpriteType::PlayerSprite;
         file.write(reinterpret_cast<const char*>(&type), sizeof(type));
     }
     else if (dynamic_cast<Background*>(sprite.get())) {
-        SpriteType type = SpriteType::Background;
+        SpriteType type = SpriteType::BackgroundSprite;
         file.write(reinterpret_cast<const char*>(&type), sizeof(type));
     }
     else {
@@ -91,11 +91,11 @@ void SceneNode::Load(std::ifstream& file) {
     file.read(reinterpret_cast<char*>(&type), sizeof(type));
 
     switch (type) {
-    case SpriteType::Player:
-        sprite = std::make_shared<Player>(Vector2{ 0, 0 }, "", Vector2{ 0, 0 }, "", resourceManager);
+    case SpriteType::PlayerSprite:
+        sprite = std::make_shared<Player>(resourceManager, Vector2{ 0, 0 }, Vector2{ 0, 0 });
         break;
-    case SpriteType::Background:
-        sprite = std::make_shared<Background>("", resourceManager);
+    case SpriteType::BackgroundSprite:
+        sprite = std::make_shared<Background>(resourceManager);
         break;
     default:
         throw std::runtime_error("Unknown sprite type during loading");
