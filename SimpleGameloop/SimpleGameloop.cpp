@@ -31,8 +31,8 @@ int main() {
     for (auto& sprite : playerSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
     int mainSprite = lastSpriteId;
 
-    auto otherSprites = SpriteFactory::CreateSprites("Player", 1, { -200, 200, 0, 0 }, resourceManager);
-    for (auto& sprite : otherSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite), mainSprite--);
+    auto otherSprites = SpriteFactory::CreateSprites("Player", 2, { -200, 200, 400, 0 }, resourceManager);
+    for (auto& sprite : otherSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite), mainSprite);
 
     bool isPaused = false;
     SetTargetFPS(MAX_FPS);

@@ -69,7 +69,7 @@ public:
         for (auto& [id, node] : sceneNodeMap)
             InsertNodeRecursively(node);
 
-        for (auto& [id, node] : sceneNodeMap) {
+        for (auto& node : quadtree.Retrieve(Rectangle{ 0, 0, (float)screenWidth, (float)screenHeight })) {
             Rectangle bounds = node->GetBounds();
             auto nearbyNodes = quadtree.Retrieve(bounds);
 

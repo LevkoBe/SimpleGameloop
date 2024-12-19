@@ -29,7 +29,7 @@ public:
 
             if (spriteType == "Player") {
                 spriteNode = std::make_shared<SceneNode>(
-                    std::make_shared<Player>(resourceManager, position, Vector2{ 180, 180 }, ShapeType::Rectangular),
+                    std::make_shared<Player>(resourceManager, position, Vector2{ 180, 180 }, ShapeType::Circular),
                     resourceManager
                 );
             }
