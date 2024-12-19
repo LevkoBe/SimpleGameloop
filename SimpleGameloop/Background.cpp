@@ -18,9 +18,9 @@ void Background::Update(float deltaTime, int screenWidth, int screenHeight) {
     if (position.y > 0) position.y -= texture.height;
 }
 
-void Background::Draw() const {
-    for (int x = static_cast<int>(position.x); x < GetScreenWidth(); x += texture.width)
-        for (int y = static_cast<int>(position.y); y < GetScreenHeight(); y += texture.height)
+void Background::Draw(int global_x, int global_y) const {
+    for (int x = static_cast<int>(global_x); x < GetScreenWidth(); x += texture.width)
+        for (int y = static_cast<int>(global_y); y < GetScreenHeight(); y += texture.height)
             DrawTexture(texture, x, y, WHITE);
 }
 

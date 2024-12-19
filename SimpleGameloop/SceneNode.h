@@ -23,6 +23,7 @@ public:
     const std::vector<std::shared_ptr<SceneNode>>& GetChildren() const;
 
     void Update(float deltaTime, int screenWidth, int screenHeight);
+    void ConstrainToBounds(int screenWidth, int screenHeight);
     void Draw() const;
 
     bool IsCollidable() const;

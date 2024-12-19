@@ -36,12 +36,51 @@ const std::vector<std::shared_ptr<SceneNode>>& SceneNode::GetChildren() const {
 }
 
 void SceneNode::Update(float deltaTime, int screenWidth, int screenHeight) {
-    if (sprite) sprite->Update(deltaTime, screenWidth, screenHeight);
+    if (sprite) {
+        sprite->Update(deltaTime, screenWidth, screenHeight);
+
+        sprite->position.x += sprite->velocity.x * deltaTime;
+        sprite->position.y += sprite->velocity.y * deltaTime;
+    }
+    if (sprite->collidable) ConstrainToBounds(screenWidth, screenHeight);
+
     for (const auto& child : children) child->Update(deltaTime, screenWidth, screenHeight);
 }
 
+void SceneNode::ConstrainToBounds(int screenWidth, int screenHeight) {
+    if (sprite) {
+        float halfWidth = sprite->size.x / 2.0f;
+        float halfHeight = sprite->size.y / 2.0f;
+        auto position = GetGlobalPosition();
+        auto offset_x = position.x - sprite->position.x;
+        auto offset_y = position.y - sprite->position.y;
+
+        if (position.x - halfWidth < 0) {
+            sprite->position.x = halfWidth - offset_x;
+            sprite->velocity.x = -sprite->velocity.x;
+            sprite->OnCollision();
+        }
+        if (position.x + halfWidth > screenWidth) {
+            sprite->position.x = screenWidth - halfWidth - offset_x;
+            sprite->velocity.x = -sprite->velocity.x;
+            sprite->OnCollision();
+        }
+        if (position.y - halfHeight < 0) {
+            sprite->position.y = halfHeight - offset_y;
+            sprite->velocity.y = -sprite->velocity.y;
+            sprite->OnCollision();
+        }
+        if (position.y + halfHeight > screenHeight) {
+            sprite->position.y = screenHeight - halfHeight - offset_y;
+            sprite->velocity.y = -sprite->velocity.y;
+            sprite->OnCollision();
+        }
+    }
+}
+
 void SceneNode::Draw() const {
-    if (sprite) sprite->Draw();
+    auto pos = GetGlobalPosition();
+    if (sprite) sprite->Draw(pos.x, pos.y);
     for (const auto& child : children) child->Draw();
 }
 

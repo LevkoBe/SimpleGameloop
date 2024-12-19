@@ -15,7 +15,7 @@ public:
     Background(ResourceManager& resourceManager, const std::string& texturePath = "resources/background.png", float scrollSpeed = 100.0f);
 
     void Update(float deltaTime, int screenWidth, int screenHeight) override;
-    void Draw() const override;
+    void Draw(int global_x, int global_y) const override;
     void Save(std::ofstream& file) const override;
     void Load(std::ifstream& file) override;
 };

@@ -28,11 +28,8 @@ public:
     );
 
     void Update(float deltaTime, int screenWidth, int screenHeight) override;
-    void Draw() const override;
+    void OnCollision() const override;
+    void Draw(int global_x, int global_y) const override;
     void Save(std::ofstream& file) const override;
     void Load(std::ifstream& file) override;
-
-private:
-    void Move(float deltaTime);
-    void ConstrainToBounds(int screenWidth, int screenHeight);
 };

@@ -18,52 +18,22 @@ resourceManager(resourceManager)
 }
 
 void Player::Update(float deltaTime, int screenWidth, int screenHeight) {
-    Move(deltaTime);
-    ConstrainToBounds(screenWidth, screenHeight);
-}
-
-void Player::Move(float deltaTime) {
     if (IsKeyDown(KEY_W)) velocity.y -= ACCELERATION * deltaTime;
     if (IsKeyDown(KEY_S)) velocity.y += ACCELERATION * deltaTime;
     if (IsKeyDown(KEY_A)) velocity.x -= ACCELERATION * deltaTime;
     if (IsKeyDown(KEY_D)) velocity.x += ACCELERATION * deltaTime;
 
-    position.x += velocity.x * deltaTime;
-    position.y += velocity.y * deltaTime;
-
     Vector2 mousePosition = GetMousePosition();
     rotation = atan2f(mousePosition.y - position.y, mousePosition.x - position.x) * RAD2DEG + ROTATION_OFFSET;
 }
 
-void Player::ConstrainToBounds(int screenWidth, int screenHeight) {
-    float halfWidth = size.x / 2.0f;
-    float halfHeight = size.y / 2.0f;
-
-    if (position.x - halfWidth < 0) {
-        position.x = halfWidth;
-        velocity.x = -velocity.x;
-        PlaySound(bounceSound);
-    }
-    if (position.x + halfWidth > screenWidth) {
-        position.x = screenWidth - halfWidth;
-        velocity.x = -velocity.x;
-        PlaySound(bounceSound);
-    }
-    if (position.y - halfHeight < 0) {
-        position.y = halfHeight;
-        velocity.y = -velocity.y;
-        PlaySound(bounceSound);
-    }
-    if (position.y + halfHeight > screenHeight) {
-        position.y = screenHeight - halfHeight;
-        velocity.y = -velocity.y;
-        PlaySound(bounceSound);
-    }
+void Player::OnCollision() const {
+    PlaySound(bounceSound);
 }
 
-void Player::Draw() const {
+void Player::Draw(int global_x, int global_y) const {
     Rectangle source = { 0, 0, (float)texture.width, (float)texture.height };
-    Rectangle destination = { position.x, position.y, size.x, size.y };
+    Rectangle destination = { global_x, global_y, size.x, size.y };
     Vector2 origin = { size.x / 2.0f, size.y / 2.0f };
 
     DrawTexturePro(texture, source, destination, origin, rotation, WHITE);

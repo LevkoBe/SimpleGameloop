@@ -6,8 +6,11 @@ Sprite::Sprite(Vector2 initialPosition, Vector2 size, float initialRotation, Vec
 void Sprite::Update(float deltaTime, int screenWidth, int screenHeight) {
     // Default Update: Do nothing
 }
+void Sprite::OnCollision() const {
+    // Default Reaction: Absent
+}
 
-void Sprite::Draw() const {
+void Sprite::Draw(int global_x, int global_y) const {
     // Default Draw: Represent a blank sprite
 }
 

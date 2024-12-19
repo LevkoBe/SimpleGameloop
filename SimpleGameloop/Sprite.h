@@ -16,7 +16,8 @@ public:
     Sprite(Vector2 initialPosition = { 0, 0 }, Vector2 size = { 0, 0 }, float initialRotation = 0.0f, Vector2 initialVelocity = { 0, 0 }, ShapeType shape = Circular, bool collidable = true);
 
     virtual void Update(float deltaTime, int screenWidth, int screenHeight);
-    virtual void Draw() const;
+    virtual void OnCollision() const;
+    virtual void Draw(int global_x, int global_y) const;
 
     void Save(std::ofstream& file) const override;
     void Load(std::ifstream& file) override;
