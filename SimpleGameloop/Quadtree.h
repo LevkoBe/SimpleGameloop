@@ -78,12 +78,20 @@ public:
         std::vector<std::shared_ptr<SceneNode>> result;
 
         int index = GetIndex(rect);
-        if (index != -1 && children[0]) {
-            auto childResult = children[index]->Retrieve(rect);
-            result.insert(result.end(), childResult.begin(), childResult.end());
-        }
 
+        if (children[0]) {
+            if (index == -1)
+                for (const auto& child : children) {
+                    auto childResult = child->Retrieve(rect);
+                    result.insert(result.end(), childResult.begin(), childResult.end());
+                }
+            else {
+                auto childResult = children[index]->Retrieve(rect);
+                result.insert(result.end(), childResult.begin(), childResult.end());
+            }
+        }
         result.insert(result.end(), objects.begin(), objects.end());
         return result;
     }
+
 };

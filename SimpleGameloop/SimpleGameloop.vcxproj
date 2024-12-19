@@ -140,6 +140,7 @@
     <ClCompile Include="SimpleGameloop.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteFactory.h" />
+    <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\p1.png" />
@@ -152,6 +153,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="ShapeType.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="Wall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,9 +2,11 @@
 #include <stdexcept>
 #include "Player.h"
 #include "Background.h"
+#include "Wall.h"
 
 enum class SpriteType {
     PlayerSprite,
+    WallSprite,
     BackgroundSprite
 };
 
@@ -126,8 +128,10 @@ void SceneNode::Save(std::ofstream& file) const {
     if (dynamic_cast<Player*>(sprite.get())) {
         SpriteType type = SpriteType::PlayerSprite;
         file.write(reinterpret_cast<const char*>(&type), sizeof(type));
-    }
-    else if (dynamic_cast<Background*>(sprite.get())) {
+    } else if (dynamic_cast<Wall*>(sprite.get())) {
+        SpriteType type = SpriteType::WallSprite;
+        file.write(reinterpret_cast<const char*>(&type), sizeof(type));
+    } else if (dynamic_cast<Background*>(sprite.get())) {
         SpriteType type = SpriteType::BackgroundSprite;
         file.write(reinterpret_cast<const char*>(&type), sizeof(type));
     }
@@ -152,6 +156,9 @@ void SceneNode::Load(std::ifstream& file) {
     switch (type) {
     case SpriteType::PlayerSprite:
         sprite = std::make_shared<Player>(resourceManager, Vector2{ 0, 0 }, Vector2{ 0, 0 });
+        break;
+    case SpriteType::WallSprite:
+        sprite = std::make_shared<Wall>(resourceManager, Vector2{ 0, 0 }, Vector2{ 0, 0 });
         break;
     case SpriteType::BackgroundSprite:
         sprite = std::make_shared<Background>(resourceManager);
