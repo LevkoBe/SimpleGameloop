@@ -27,12 +27,12 @@ int main() {
     auto backgroundSprites = SpriteFactory::CreateSprites("Background", 1, { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, resourceManager);
     for (auto& sprite : backgroundSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
 
-    auto playerSprites = SpriteFactory::CreateSprites("Player", 1, { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2}, resourceManager);
+    auto playerSprites = SpriteFactory::CreateSprites("Player", 3, { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2}, resourceManager);
     for (auto& sprite : playerSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
     int mainSprite = lastSpriteId;
 
-    auto otherSprites = SpriteFactory::CreateSprites("Player", 2, { -200, 200, 400, 0 }, resourceManager);
-    for (auto& sprite : otherSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite), mainSprite);
+    auto otherSprites = SpriteFactory::CreateSprites("Player", 0, { -200, 200, 400, 0 }, resourceManager);
+    for (auto& sprite : otherSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite), mainSprite--);
 
     bool isPaused = false;
     SetTargetFPS(MAX_FPS);
