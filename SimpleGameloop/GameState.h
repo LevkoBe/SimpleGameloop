@@ -6,28 +6,70 @@
 #include "Quadtree.h"
 #include <numbers>
 #include <iostream>
-double M_PI = std::numbers::pi;
+
+const double M_PI = std::numbers::pi_v<double>;
 
 class GameState {
 private:
     ResourceManager& resourceManager;
     Rectangle worldBounds;
-    std::vector<std::shared_ptr<SceneNode>> sceneNodes;
+    std::unordered_map<int, std::shared_ptr<SceneNode>> sceneNodeMap;  // Fixed inconsistent name
+    int nextId = 0;
     Quadtree quadtree;
 
 public:
     GameState(ResourceManager& resourceManager, Rectangle worldBounds)
         : resourceManager(resourceManager), worldBounds(worldBounds), quadtree(worldBounds) {}
 
-    void Register(std::shared_ptr<SceneNode> node) {
-        sceneNodes.push_back(std::move(node));
+    int RegisterEntity(std::shared_ptr<SceneNode> node, int parentId = -1) {
+        int id = nextId++;
+        if (parentId == -1)
+            sceneNodeMap[id] = std::move(node);
+        else {
+            auto parentIt = sceneNodeMap.find(parentId);
+            if (parentIt == sceneNodeMap.end()) throw std::runtime_error("Parent ID not found.");
+            parentIt->second->AttachChild(std::move(node));
+        }
+        return id;
+    }
+
+    std::shared_ptr<SceneNode> GetEntityById(int id) {
+        auto it = sceneNodeMap.find(id);
+        if (it != sceneNodeMap.end())
+            return it->second;
+        return nullptr;
+    }
+
+    void RemoveEntity(int id) {
+        auto node = GetEntityById(id);
+        if (node) {
+            if (node->parent)
+                node->parent->DetachChild(*node);
+            else
+                sceneNodeMap.erase(id);
+        }
+    }
+
+    void MoveNode(SceneNode& nodeToMove, SceneNode& newParent) {
+        if (!nodeToMove.parent)
+            throw std::runtime_error("Node to move has no parent and cannot be moved.");
+
+        std::shared_ptr<SceneNode> detachedNode = nodeToMove.parent->DetachChild(nodeToMove);
+        newParent.AttachChild(std::move(detachedNode));
+    }
+
+    void InsertNodeRecursively(std::shared_ptr<SceneNode> node) {
+        quadtree.Insert(node);
+
+        for (const auto& child : node->GetChildren()) InsertNodeRecursively(child);
     }
 
     void Update(float deltaTime, int screenWidth, int screenHeight) {
         quadtree.Clear();
-        for (auto& node : sceneNodes) quadtree.Insert(node);
+        for (auto& [id, node] : sceneNodeMap)
+            InsertNodeRecursively(node);
 
-        for (auto& node : sceneNodes) {
+        for (auto& [id, node] : sceneNodeMap) {
             Rectangle bounds = node->GetBounds();
             auto nearbyNodes = quadtree.Retrieve(bounds);
 
@@ -97,32 +139,34 @@ public:
     }
 
     void Draw() const {
-        for (const auto& node : sceneNodes) node->Draw();
+        for (const auto& [id, node] : sceneNodeMap)
+            node->Draw();
     }
 
     void Save(std::ofstream& file) const {
-        size_t nodeCount = sceneNodes.size();
+        size_t nodeCount = sceneNodeMap.size();
         file.write(reinterpret_cast<const char*>(&nodeCount), sizeof(nodeCount));
-        for (const auto& node : sceneNodes) node->Save(file);
+        for (const auto& [id, node] : sceneNodeMap)
+            node->Save(file);
     }
 
     void Load(std::ifstream& file) {
-        std::vector<std::shared_ptr<SceneNode>> previousState = sceneNodes;
+        std::unordered_map<int, std::shared_ptr<SceneNode>> previousState = sceneNodeMap;
 
         try {
             size_t nodeCount;
             file.read(reinterpret_cast<char*>(&nodeCount), sizeof(nodeCount));
 
-            sceneNodes.clear();
+            sceneNodeMap.clear();
             for (size_t i = 0; i < nodeCount; ++i) {
                 auto node = std::make_shared<SceneNode>(resourceManager);
                 node->Load(file);
-                sceneNodes.push_back(std::move(node));
+                sceneNodeMap[nextId++] = std::move(node);
             }
         }
         catch (const std::exception& e) {
             std::cerr << "Error loading game state: " << e.what() << std::endl;
-            sceneNodes = previousState;
+            sceneNodeMap = previousState;
         }
     }
 };

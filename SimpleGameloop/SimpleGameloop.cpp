@@ -3,6 +3,7 @@
 #include "GameState.h"
 #include "Background.h"
 #include <ctime>
+#include "SpriteFactory.h"
 
 const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 800;
@@ -14,6 +15,8 @@ const float MAX_FPS = 60.0f;
 const std::string SAVE_FILE = "savegame.dat";
 
 int main() {
+    int lastSpriteId = -1;
+
     srand(static_cast<unsigned int>(time(0)));
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Game with Scene Graph and Quadtree");
     InitAudioDevice();
@@ -21,29 +24,15 @@ int main() {
     ResourceManager resourceManager;
     GameState gameState(resourceManager, { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT });
 
-    auto backgroundNode = std::make_shared<SceneNode>(std::make_shared<Background>(resourceManager), resourceManager);
-    gameState.Register(std::move(backgroundNode));
+    auto backgroundSprites = SpriteFactory::CreateSprites("Background", 1, { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, resourceManager);
+    for (auto& sprite : backgroundSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
 
-    auto playerNode1 = std::make_shared<SceneNode>(std::make_shared<Player>(
-        resourceManager,
-        Vector2{ 1 * SCREEN_WIDTH / 4.0f, SCREEN_HEIGHT / 2.0f },
-        Vector2{ 180, 180 },
-        ShapeType::Rectangular
-    ), resourceManager);
-    auto playerNode2 = std::make_shared<SceneNode>(std::make_shared<Player>(
-        resourceManager,
-        Vector2{ 2 * SCREEN_WIDTH / 4.0f, SCREEN_HEIGHT / 2.0f },
-        Vector2{ 180, 180 },
-        ShapeType::Rectangular
-    ), resourceManager);
-    auto playerNode3 = std::make_shared<SceneNode>(std::make_shared<Player>(
-        resourceManager,
-        Vector2{ 3 * SCREEN_WIDTH / 4.0f, SCREEN_HEIGHT / 2.0f },
-        Vector2{ 180, 180 }
-    ), resourceManager);
-    gameState.Register(std::move(playerNode1));
-    gameState.Register(std::move(playerNode2));
-    gameState.Register(std::move(playerNode3));
+    auto playerSprites = SpriteFactory::CreateSprites("Player", 3, { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2}, resourceManager);
+    for (auto& sprite : playerSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
+    int mainSprite = lastSpriteId;
+
+    auto otherSprites = SpriteFactory::CreateSprites("Player", 3, { 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT }, resourceManager);
+    for (auto& sprite : otherSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
 
     bool isPaused = false;
     SetTargetFPS(MAX_FPS);
@@ -76,7 +65,9 @@ int main() {
         BeginDrawing();
         ClearBackground(BACKGROUND_COLOR);
 
-        if (isPaused) DrawText("PAUSED", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 - 10, 20, PAUSED_TEXT_COLOR);
+        if (isPaused) {
+            DrawText("PAUSED", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 - 10, 20, PAUSED_TEXT_COLOR);
+        }
         else {
             gameState.Draw();
             DrawText("Use WASD to control speed, P to pause.", 10, 10, 20, INSTRUCTION_TEXT_COLOR);

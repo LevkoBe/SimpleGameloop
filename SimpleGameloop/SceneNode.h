@@ -10,11 +10,11 @@
 class SceneNode {
 private:
     std::shared_ptr<Sprite> sprite;
-    SceneNode* parent;
     std::vector<std::shared_ptr<SceneNode>> children;
     ResourceManager& resourceManager;
 
 public:
+    SceneNode* parent;
     SceneNode(ResourceManager& resourceManager);
     SceneNode(std::shared_ptr<Sprite> sprite, ResourceManager& resourceManager);
 
