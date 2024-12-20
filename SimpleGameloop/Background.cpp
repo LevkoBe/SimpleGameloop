@@ -1,5 +1,7 @@
 #include "Background.h"
 
+constexpr float B_ACCELERATION = 400.0f;
+
 Background::Background(ResourceManager& resourceManager, const std::string& texturePath, float scrollSpeed)
     : Sprite({ 0, 0 }, { 0, 0 }, 0.0, { 0, 0 }, Rectangular, false), texturePath(texturePath), resourceManager(resourceManager), scrollSpeed(scrollSpeed) {
     texture = resourceManager.GetTexture(texturePath);
@@ -7,6 +9,11 @@ Background::Background(ResourceManager& resourceManager, const std::string& text
 }
 
 void Background::Update(float deltaTime, int screenWidth, int screenHeight) {
+    if (IsKeyDown(KEY_W)) velocity.y -= B_ACCELERATION * deltaTime;
+    if (IsKeyDown(KEY_S)) velocity.y += B_ACCELERATION * deltaTime;
+    if (IsKeyDown(KEY_A)) velocity.x -= B_ACCELERATION * deltaTime;
+    if (IsKeyDown(KEY_D)) velocity.x += B_ACCELERATION * deltaTime;
+
     Vector2 scrollDelta = GetMouseWheelMoveV();
 
     position.x += scrollDelta.x * scrollSpeed;
