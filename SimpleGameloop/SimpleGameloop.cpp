@@ -12,7 +12,8 @@ const Color PAUSED_TEXT_COLOR = Color{ 255, 165, 0, 255 };
 const Color INSTRUCTION_TEXT_COLOR = Color{ 255, 69, 0, 255 };
 const float SUSPICIOUS_DELTA_TIME_THRESHOLD = 0.1f;
 const float MAX_FPS = 60.0f;
-const std::string SAVE_FILE = "savegame.dat";
+const std::string SCENE_FILE = "scene.dat";
+const std::string SPRITES_FILE = "sprites.dat";
 
 int main() {
     int lastSpriteId = -1;
@@ -49,21 +50,8 @@ int main() {
             gameState.Update(deltaTime, SCREEN_WIDTH, SCREEN_HEIGHT);
         }
 
-        if (IsKeyPressed(KEY_ZERO)) {
-            std::ofstream file(SAVE_FILE, std::ios::binary);
-            if (file.is_open()) {
-                gameState.Save(file);
-                file.close();
-            }
-        }
-
-        if (IsKeyPressed(KEY_ONE)) {
-            std::ifstream file(SAVE_FILE, std::ios::binary);
-            if (file.is_open()) {
-                gameState.Load(file);
-                file.close();
-            }
-        }
+        if (IsKeyPressed(KEY_ZERO)) gameState.SaveGameState(SCENE_FILE, SPRITES_FILE);
+        if (IsKeyPressed(KEY_ONE)) gameState.LoadGameState(SCENE_FILE, SPRITES_FILE);
 
         BeginDrawing();
         ClearBackground(BACKGROUND_COLOR);

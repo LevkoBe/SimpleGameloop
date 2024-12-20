@@ -13,7 +13,7 @@ class GameState {
 private:
     ResourceManager& resourceManager;
     Rectangle worldBounds;
-    std::unordered_map<int, std::shared_ptr<SceneNode>> sceneNodeMap;  // Fixed inconsistent name
+    std::unordered_map<int, std::shared_ptr<SceneNode>> sceneNodeMap;
     int nextId = 0;
     Quadtree quadtree;
 
@@ -142,7 +142,7 @@ public:
         for (const auto& [id, node] : sceneNodeMap)
             node->Draw();
     }
-
+    // todo: remove
     void Save(std::ofstream& file) const {
         size_t nodeCount = sceneNodeMap.size();
         file.write(reinterpret_cast<const char*>(&nodeCount), sizeof(nodeCount));
@@ -169,4 +169,70 @@ public:
             sceneNodeMap = previousState;
         }
     }
+
+    void SaveSceneGraph(std::ofstream& sceneFile) const {
+        size_t nodeCount = sceneNodeMap.size();
+        sceneFile.write(reinterpret_cast<const char*>(&nodeCount), sizeof(nodeCount));
+
+        for (const auto& [id, node] : sceneNodeMap) {
+            sceneFile.write(reinterpret_cast<const char*>(&id), sizeof(id));
+            node->SaveScene(sceneFile);
+        }
+    }
+
+    void LoadSceneGraph(std::ifstream& sceneFile) {
+        size_t nodeCount;
+        sceneFile.read(reinterpret_cast<char*>(&nodeCount), sizeof(nodeCount));
+
+        sceneNodeMap.clear();
+        for (size_t i = 0; i < nodeCount; ++i) {
+            int id;
+            sceneFile.read(reinterpret_cast<char*>(&id), sizeof(id));
+
+            auto node = std::make_shared<SceneNode>(resourceManager);
+            node->LoadScene(sceneFile);
+            sceneNodeMap[id] = std::move(node);
+        }
+    }
+
+    void SaveSprites(std::ofstream& spriteFile) const {
+        for (const auto& [id, node] : sceneNodeMap) node->SaveSprite(spriteFile);
+    }
+
+    void LoadSprites(std::ifstream& spriteFile) {
+        for (auto& [id, node] : sceneNodeMap) node->LoadSprite(spriteFile);
+    }
+
+    void SaveGameState(const std::string& sceneFilePath, const std::string& spriteFilePath) const {
+        std::ofstream sceneFile(sceneFilePath, std::ios::binary);
+        if (!sceneFile.is_open()) throw std::runtime_error("Failed to open scene file for saving.");
+        SaveSceneGraph(sceneFile);
+        sceneFile.close();
+
+        std::ofstream spriteFile(spriteFilePath, std::ios::binary);
+        if (!spriteFile.is_open()) throw std::runtime_error("Failed to open sprite file for saving.");
+        SaveSprites(spriteFile);
+        spriteFile.close();
+    }
+
+    void LoadGameState(const std::string& sceneFilePath, const std::string& spriteFilePath) {
+        std::unordered_map<int, std::shared_ptr<SceneNode>> previousState = sceneNodeMap;
+
+        try {
+            std::ifstream sceneFile(sceneFilePath, std::ios::binary);
+            if (!sceneFile.is_open()) throw std::runtime_error("Failed to open scene file for loading.");
+            LoadSceneGraph(sceneFile);
+            sceneFile.close();
+
+            std::ifstream spriteFile(spriteFilePath, std::ios::binary);
+            if (!spriteFile.is_open()) throw std::runtime_error("Failed to open sprite file for loading.");
+            LoadSprites(spriteFile);
+            spriteFile.close();
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Error loading game state: " << e.what() << std::endl;
+            sceneNodeMap = previousState;
+        }
+    }
+
 };
