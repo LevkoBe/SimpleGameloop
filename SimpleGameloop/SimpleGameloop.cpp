@@ -32,8 +32,11 @@ int main() {
     for (auto& sprite : playerSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
     int mainSprite = lastSpriteId;
 
-    auto wallSprites = SpriteFactory::CreateSprites("Wall", 3, { 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2}, resourceManager);
-    for (auto& sprite : wallSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
+    //auto wallSprites = SpriteFactory::CreateSprites("Wall", 3, { 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2}, resourceManager);
+    //for (auto& sprite : wallSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
+
+    auto platformsSprites = SpriteFactory::CreateSprites("Platform", 3, { 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2}, resourceManager);
+    for (auto& sprite : platformsSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite));
 
     auto childrenSprites = SpriteFactory::CreateSprites("Player", 2, { -200, 200, 400, 0 }, resourceManager);
     for (auto& sprite : childrenSprites) lastSpriteId = gameState.RegisterEntity(std::move(sprite), mainSprite--);

@@ -6,6 +6,7 @@
 #include "Background.h"
 #include <cmath>
 #include "Wall.h"
+#include "Platform.h"
 
 class SpriteFactory {
 public:
@@ -30,7 +31,7 @@ public:
 
             if (spriteType == "Player") {
                 spriteNode = std::make_shared<SceneNode>(
-                    std::make_shared<Player>(resourceManager, position, Vector2{ 180, 180 }, ShapeType::Circular),
+                    std::make_shared<Player>(resourceManager, position, Vector2{ 100, 100 }, ShapeType::Circular),
                     resourceManager
                 );
             } else if (spriteType == "Background") {
@@ -40,7 +41,12 @@ public:
                 );
             } else if (spriteType == "Wall") {
                 spriteNode = std::make_shared<SceneNode>(
-                    std::make_shared<Wall>(resourceManager, position, Vector2{ 180, 180 }, ShapeType::Rectangular),
+                    std::make_shared<Wall>(resourceManager, position, Vector2{ 100, 100 }, ShapeType::Rectangular),
+                    resourceManager
+                );
+            } else if (spriteType == "Platform") {
+                spriteNode = std::make_shared<SceneNode>(
+                    std::make_shared<Platform>(resourceManager, position, Vector2{ 100, 100 }, Vector2{ 100, 0 }, ShapeType::Rectangular),
                     resourceManager
                 );
             }

@@ -18,7 +18,7 @@ public:
         ResourceManager& resourceManager,
         Vector2 initialPosition,
         Vector2 size,
-        ShapeType shape = Circular,
+        ShapeType shape = Rectangular,
         const std::string& texturePath = "resources/background.png",
         const std::string& bounceSoundPath = "resources/bounce.mp3",
         bool collidable = true

@@ -3,11 +3,13 @@
 #include "Player.h"
 #include "Background.h"
 #include "Wall.h"
+#include "Platform.h"
 
 enum class SpriteType {
     PlayerSprite,
     WallSprite,
-    BackgroundSprite
+    BackgroundSprite,
+    PlatformSprite
 };
 
 SceneNode::SceneNode(ResourceManager& resourceManager)
@@ -155,6 +157,10 @@ void SceneNode::SaveSprite(std::ofstream& file) const {
         SpriteType type = SpriteType::BackgroundSprite;
         file.write(reinterpret_cast<const char*>(&type), sizeof(type));
     }
+    else if (dynamic_cast<Platform*>(sprite.get())) {
+        SpriteType type = SpriteType::PlatformSprite;
+        file.write(reinterpret_cast<const char*>(&type), sizeof(type));
+    }
     else {
         throw std::runtime_error("Unknown sprite type during saving");
     }
@@ -172,6 +178,9 @@ void SceneNode::LoadSprite(std::ifstream& file) {
         break;
     case SpriteType::WallSprite:
         sprite = std::make_shared<Wall>(resourceManager, Vector2{ 0, 0 }, Vector2{ 0, 0 });
+        break;
+    case SpriteType::PlatformSprite:
+        sprite = std::make_shared<Platform>(resourceManager, Vector2{ 0, 0 }, Vector2{ 0, 0 }, Vector2{ 0, 0 });
         break;
     case SpriteType::BackgroundSprite:
         sprite = std::make_shared<Background>(resourceManager);

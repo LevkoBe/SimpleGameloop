@@ -5,24 +5,23 @@
 #include "ResourceManager.h"
 #include <cmath>
 
-constexpr float ACCELERATION = 1000.0f;
-constexpr float ROTATION_OFFSET = 20.0f;
-
-class Player : public Sprite {
+class Platform : public Sprite {
 private:
     std::string texturePath;
     std::string bounceSoundPath;
     Texture2D texture;
     Sound bounceSound;
+    Vector2 expectedVelocity;
     ResourceManager& resourceManager;
 
 public:
-    Player(
+    Platform(
         ResourceManager& resourceManager,
         Vector2 initialPosition,
         Vector2 size,
-        ShapeType shape = Circular,
-        const std::string& texturePath = "resources/player.png",
+        Vector2 expectedVelocity,
+        ShapeType shape = Rectangular,
+        const std::string& texturePath = "resources/background.png",
         const std::string& bounceSoundPath = "resources/bounce.mp3",
         bool collidable = true
     );
