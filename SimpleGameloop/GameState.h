@@ -142,33 +142,6 @@ public:
         for (const auto& [id, node] : sceneNodeMap)
             node->Draw();
     }
-    // todo: remove
-    void Save(std::ofstream& file) const {
-        size_t nodeCount = sceneNodeMap.size();
-        file.write(reinterpret_cast<const char*>(&nodeCount), sizeof(nodeCount));
-        for (const auto& [id, node] : sceneNodeMap)
-            node->Save(file);
-    }
-
-    void Load(std::ifstream& file) {
-        std::unordered_map<int, std::shared_ptr<SceneNode>> previousState = sceneNodeMap;
-
-        try {
-            size_t nodeCount;
-            file.read(reinterpret_cast<char*>(&nodeCount), sizeof(nodeCount));
-
-            sceneNodeMap.clear();
-            for (size_t i = 0; i < nodeCount; ++i) {
-                auto node = std::make_shared<SceneNode>(resourceManager);
-                node->Load(file);
-                sceneNodeMap[nextId++] = std::move(node);
-            }
-        }
-        catch (const std::exception& e) {
-            std::cerr << "Error loading game state: " << e.what() << std::endl;
-            sceneNodeMap = previousState;
-        }
-    }
 
     void SaveSceneGraph(std::ofstream& sceneFile) const {
         size_t nodeCount = sceneNodeMap.size();

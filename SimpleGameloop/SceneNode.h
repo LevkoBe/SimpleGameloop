@@ -35,9 +35,7 @@ public:
     Vector2 GetSize() const;
     Vector2 GetVelocity() const;
     void SetVelocity(const Vector2& velocity);
-    // todo: remove
-    virtual void Save(std::ofstream& file) const;
-    virtual void Load(std::ifstream& file);
+
     void SaveScene(std::ofstream& file) const;
     void LoadScene(std::ifstream& file);
     void SaveSprite(std::ofstream& file) const;

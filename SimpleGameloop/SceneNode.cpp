@@ -124,61 +124,6 @@ void SceneNode::SetVelocity(const Vector2& velocity) {
     sprite->velocity = velocity;
 }
 
-void SceneNode::Save(std::ofstream& file) const {
-    if (dynamic_cast<Player*>(sprite.get())) {
-        SpriteType type = SpriteType::PlayerSprite;
-        file.write(reinterpret_cast<const char*>(&type), sizeof(type));
-    } else if (dynamic_cast<Wall*>(sprite.get())) {
-        SpriteType type = SpriteType::WallSprite;
-        file.write(reinterpret_cast<const char*>(&type), sizeof(type));
-    } else if (dynamic_cast<Background*>(sprite.get())) {
-        SpriteType type = SpriteType::BackgroundSprite;
-        file.write(reinterpret_cast<const char*>(&type), sizeof(type));
-    }
-    else {
-        throw std::runtime_error("Unknown sprite type during saving");
-    }
-
-    sprite->Save(file);
-
-    size_t childCount = children.size();
-    file.write(reinterpret_cast<const char*>(&childCount), sizeof(childCount));
-
-    for (const auto& child : children) {
-        child->Save(file);
-    }
-}
-
-void SceneNode::Load(std::ifstream& file) {
-    SpriteType type;
-    file.read(reinterpret_cast<char*>(&type), sizeof(type));
-
-    switch (type) {
-    case SpriteType::PlayerSprite:
-        sprite = std::make_shared<Player>(resourceManager, Vector2{ 0, 0 }, Vector2{ 0, 0 });
-        break;
-    case SpriteType::WallSprite:
-        sprite = std::make_shared<Wall>(resourceManager, Vector2{ 0, 0 }, Vector2{ 0, 0 });
-        break;
-    case SpriteType::BackgroundSprite:
-        sprite = std::make_shared<Background>(resourceManager);
-        break;
-    default:
-        throw std::runtime_error("Unknown sprite type during loading");
-    }
-
-    sprite->Load(file);
-
-    size_t childCount;
-    file.read(reinterpret_cast<char*>(&childCount), sizeof(childCount));
-
-    for (size_t i = 0; i < childCount; ++i) {
-        auto child = std::make_shared<SceneNode>(resourceManager);
-        child->Load(file);
-        AttachChild(std::move(child));
-    }
-}
-
 void SceneNode::SaveScene(std::ofstream& file) const {
     size_t childCount = children.size();
     file.write(reinterpret_cast<const char*>(&childCount), sizeof(childCount));
